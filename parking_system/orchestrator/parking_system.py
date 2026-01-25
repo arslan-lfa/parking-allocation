@@ -1,4 +1,5 @@
 import uuid
+import hashlib
 from typing import Dict, Any
 from ..engines.allocation_engine import AllocationEngine, AllocationError
 from ..engines.rollback_manager import RollbackManager
@@ -16,12 +17,26 @@ class ParkingSystem:
         self.zones = zones
         self.requests_registry: Dict[str, ParkingRequest] = {}
         self.allocation_engine = AllocationEngine(zones)
-        self.rollback_manager = RollbackManager(self.allocation_engine)
+        self.rollback_manager = RollbackManager(self.allocation_engine, self.requests_registry)
         self.analytics_engine = AnalyticsEngine(zones)
+        self._request_counter = 0
+
+    def _generate_request_id(self, vehicle_id: str, zone_id: str) -> str:
+        """Generate a short 6-character request ID with zone and vehicle info"""
+        self._request_counter += 1
+        # Create hash from vehicle_id, zone_id, and counter
+        combo = f"{zone_id}{vehicle_id}{self._request_counter}"
+        hash_obj = hashlib.md5(combo.encode())
+        hash_hex = hash_obj.hexdigest()
+        # Get first char from zone, first 2 from vehicle, and 3 from hash = 6 chars
+        zone_char = zone_id[0].upper() if zone_id else 'Z'
+        vehicle_chars = vehicle_id[:2].upper() if vehicle_id else 'VH'
+        hash_chars = hash_hex[:3].upper()
+        return f"{zone_char}{vehicle_chars}{hash_chars}"
 
     # ---------- Submit Request ----------
     def submit_request(self, vehicle_id: str, preferred_zone_id: str) -> str:
-        request_id = str(uuid.uuid4())
+        request_id = self._generate_request_id(vehicle_id, preferred_zone_id)
         req = ParkingRequest(request_id, vehicle_id, preferred_zone_id)
         req.transition_to(ParkingRequestState.VALIDATED)
         self.requests_registry[request_id] = req

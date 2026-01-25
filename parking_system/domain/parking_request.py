@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 
@@ -53,10 +53,11 @@ class ParkingRequest:
         self._preferred_zone_id: str = preferred_zone_id
 
         self._allocated_zone_id: Optional[str] = None
+        self._allocated_area_id: Optional[str] = None
         self._allocated_slot_id: Optional[str] = None
 
         self._state: ParkingRequestState = ParkingRequestState.NEW
-        self._created_at: datetime = datetime.utcnow()
+        self._created_at: datetime = datetime.now(timezone.utc)
         self._updated_at: datetime = self._created_at
 
     # ---------- Properties ----------
@@ -76,6 +77,10 @@ class ParkingRequest:
     @property
     def allocated_zone_id(self) -> Optional[str]:
         return self._allocated_zone_id
+
+    @property
+    def allocated_area_id(self) -> Optional[str]:
+        return self._allocated_area_id
 
     @property
     def allocated_slot_id(self) -> Optional[str]:
@@ -104,7 +109,7 @@ class ParkingRequest:
             )
 
         self._state = new_state
-        self._updated_at = datetime.utcnow()
+        self._updated_at = datetime.now(timezone.utc)
 
     # ---------- Allocation Binding ----------
 

@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 from ..domain.zone import Zone
@@ -26,7 +26,7 @@ class OperationRecord:
         self.slot_id: str = slot_id
         self.prev_slot_state: bool = prev_slot_state
         self.prev_request_state: ParkingRequestState = prev_request_state
-        self.timestamp: datetime = datetime.utcnow()
+        self.timestamp: datetime = datetime.now(timezone.utc)
 
 
 class AllocationEngine:
@@ -87,7 +87,7 @@ class AllocationEngine:
         if not zone:
             raise AllocationError("Zone not found for allocated request")
 
-        area = zone.get_area(request.allocated_zone_id)
+        area = zone.get_area(request.allocated_area_id)
         slot = area.get_slot(request.allocated_slot_id)
 
         # record previous state
@@ -102,43 +102,61 @@ class AllocationEngine:
 
         # perform release
         slot.release()
+        # Transition through ACTIVE state before COMPLETED
+        request.transition_to(ParkingRequestState.ACTIVE)
         request.transition_to(ParkingRequestState.COMPLETED)
+
     def allocate(self, request: ParkingRequest) -> None:
-            if request.state != ParkingRequestState.VALIDATED:
-                raise AllocationError("Request must be VALIDATED to allocate")
+        if request.state != ParkingRequestState.VALIDATED:
+            raise AllocationError("Request must be VALIDATED to allocate")
 
-            # Step 1: preferred zone first
-            preferred_zone = self._zones.get(request.preferred_zone_id)
-            slot = self._find_available_slot(preferred_zone) if preferred_zone else None
+        # Step 0: transition to ALLOCATING state
+        request.transition_to(ParkingRequestState.ALLOCATING)
 
-            # Step 2: cross-zone fallback with penalty scoring
-            if not slot:
-                sorted_zones = sorted(
-                    (z for z in self._zones.values() if z.zone_id != request.preferred_zone_id),
-                    key=lambda z: getattr(z, "penalty", 1),  # default penalty=1
-                )
-                for z in sorted_zones:
-                    slot = self._find_available_slot(z)
-                    if slot:
-                        break
+        # Step 1: preferred zone first
+        preferred_zone = self._zones.get(request.preferred_zone_id)
+        slot = None
+        allocated_zone = None
+        if preferred_zone:
+            slot = self._find_available_slot(preferred_zone)
+            allocated_zone = preferred_zone
 
-            # Step 3: no slots anywhere → FAILED
-            if not slot:
-                request.transition_to(ParkingRequestState.FAILED)
-                raise AllocationError("No slots available in any zone")
-
-            # Step 4: record operation
-            op = OperationRecord(
-                operation_type="ALLOCATE",
-                request_id=request.request_id,
-                slot_id=slot.slot_id,
-                prev_slot_state=slot.is_available,
-                prev_request_state=request.state,
+        # Step 2: cross-zone fallback with penalty scoring
+        if not slot:
+            sorted_zones = sorted(
+                (z for z in self._zones.values() if z.zone_id != request.preferred_zone_id),
+                key=lambda z: getattr(z, "penalty", 1),  # default penalty=1
             )
-            self._operations.append(op)
+            for z in sorted_zones:
+                slot = self._find_available_slot(z)
+                if slot:
+                    allocated_zone = z
+                    break
 
-            # Step 5: perform allocation
-            slot.allocate(request.vehicle_id)
-            request.transition_to(ParkingRequestState.ALLOCATED)
-            request._allocated_zone_id = slot.area_id
-            request._allocated_slot_id = slot.slot_id
+        # Step 3: no slots anywhere → FAILED
+        if not slot or not allocated_zone:
+            request.transition_to(ParkingRequestState.FAILED)
+            raise AllocationError("No slots available in any zone")
+
+        # Step 4: record operation
+        op = OperationRecord(
+            operation_type="ALLOCATE",
+            request_id=request.request_id,
+            slot_id=slot.slot_id,
+            prev_slot_state=slot.is_available,
+            prev_request_state=request.state,
+        )
+        self._operations.append(op)
+
+        # Step 5: perform allocation
+        slot.allocate(request.vehicle_id)
+        request.transition_to(ParkingRequestState.ALLOCATED)
+        request._allocated_zone_id = allocated_zone.zone_id
+        request._allocated_area_id = slot.area_id
+        request._allocated_slot_id = slot.slot_id
+
+    def _find_available_slot(self, zone: Zone) -> Optional[ParkingSlot]:
+        for area in zone.areas:
+            for slot in area.available_slots:
+                return slot
+        return None

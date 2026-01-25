@@ -1,24 +1,104 @@
 {% extends "base.html" %}
-{% block title %}Submit Parking Request{% endblock %}
+{% block title %}Submit Parking Request | SmartPark{% endblock %}
+{% block page_title %}Submit Parking Request{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2>Submit Parking Request</h2>
-    <form id="submit-form">
-        <label for="vehicle_id">Vehicle ID:</label><br>
-        <input type="text" id="vehicle_id" name="vehicle_id" required><br><br>
+<div class="grid grid-2">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">New Parking Request</h2>
+                <p class="card-subtitle">Find and reserve your parking spot</p>
+            </div>
+        </div>
+        <div class="card-content">
+            <form id="submit-form">
+                <div class="form-group">
+                    <label for="vehicle_id">
+                        <i class="fas fa-car"></i> Vehicle ID
+                    </label>
+                    <input type="text" id="vehicle_id" name="vehicle_id" placeholder="e.g., VEH-2024-001" required>
+                    <small style="color: var(--text-light);">Enter your vehicle registration number</small>
+                </div>
 
-        <label for="preferred_zone_id">Preferred Zone:</label><br>
-        <input type="text" id="preferred_zone_id" name="preferred_zone_id" required><br><br>
+                <div class="form-group">
+                    <label for="preferred_zone_id">
+                        <i class="fas fa-map-marker-alt"></i> Preferred Zone
+                    </label>
+                    <select id="preferred_zone_id" name="preferred_zone_id" required>
+                        <option value="">-- Select a zone --</option>
+                        <option value="Z1">Downtown (Z1) - 6 slots</option>
+                        <option value="Z2">Airport (Z2) - 2 slots</option>
+                        <option value="Z3">Shopping Center (Z3) - 10 slots</option>
+                        <option value="Z4">Business Park (Z4) - 8 slots</option>
+                    </select>
+                    <small style="color: var(--text-light);">Select your preferred parking zone</small>
+                </div>
 
-        <button type="submit">Submit Request</button>
-    </form>
-    <div id="submit-msg" style="margin-top:1rem;"></div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-check-circle"></i>
+                    Submit Request
+                </button>
+            </form>
+
+            <div id="submit-msg" style="margin-top: 1.5rem;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Zone Information</h2>
+                <p class="card-subtitle">Real-time availability status</p>
+            </div>
+        </div>
+        <div class="card-content">
+            <div style="display: grid; gap: 1rem;">
+                <div style="padding: 1rem; background: var(--light); border-radius: 8px; border-left: 4px solid var(--success);">
+                    <h4 style="margin: 0 0 0.5rem 0;">Downtown (Z1)</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-light);">Available Slots:</span>
+                        <strong style="color: var(--success);">4 / 6</strong>
+                    </div>
+                    <div style="background: white; border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div style="background: var(--success); width: 67%; height: 100%;"></div>
+                    </div>
+                </div>
+
+                <div style="padding: 1rem; background: var(--light); border-radius: 8px; border-left: 4px solid var(--warning);">
+                    <h4 style="margin: 0 0 0.5rem 0;">Airport (Z2)</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-light);">Available Slots:</span>
+                        <strong style="color: var(--warning);">1 / 2</strong>
+                    </div>
+                    <div style="background: white; border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div style="background: var(--warning); width: 50%; height: 100%;"></div>
+                    </div>
+                </div>
+
+                <div style="padding: 1rem; background: var(--light); border-radius: 8px; border-left: 4px solid var(--success);">
+                    <h4 style="margin: 0 0 0.5rem 0;">Shopping Center (Z3)</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-light);">Available Slots:</span>
+                        <strong style="color: var(--success);">7 / 10</strong>
+                    </div>
+                    <div style="background: white; border-radius: 4px; height: 8px; overflow: hidden;">
+                        <div style="background: var(--success); width: 70%; height: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 document.getElementById("submit-form").addEventListener("submit", async (e) => {
     e.preventDefault();
+    showLoadingSpinner(true);
+    
     const vehicle_id = document.getElementById("vehicle_id").value;
     const preferred_zone_id = document.getElementById("preferred_zone_id").value;
 
@@ -29,9 +109,46 @@ document.getElementById("submit-form").addEventListener("submit", async (e) => {
             body: JSON.stringify({ vehicle_id, preferred_zone_id })
         });
         const data = await resp.json();
-        document.getElementById("submit-msg").innerText = data.message + (data.data?.request_id ? " | Request ID: " + data.data.request_id : "");
+        
+        if (data.status === "success") {
+            showNotification(`Request submitted successfully! ID: ${data.data.request_id}`, 'success');
+            document.getElementById("submit-msg").innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Success!</strong>
+                        <p style="margin: 0.5rem 0 0 0;">Your parking request has been submitted.</p>
+                        <p style="margin: 0.5rem 0 0 0;"><strong>Request ID:</strong> ${data.data.request_id}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById("submit-form").reset();
+        } else {
+            showNotification(data.message || 'Error submitting request', 'error');
+            document.getElementById("submit-msg").innerHTML = `
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>Error</strong>
+                        <p style="margin: 0.5rem 0 0 0;">${data.message}</p>
+                    </div>
+                </div>
+            `;
+        }
     } catch (err) {
-        document.getElementById("submit-msg").innerText = "Error submitting request";
+        showNotification('Error submitting request', 'error');
+        document.getElementById("submit-msg").innerHTML = `
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <strong>Error</strong>
+                    <p style="margin: 0.5rem 0 0 0;">${err.message}</p>
+                </div>
+            </div>
+        `;
+    } finally {
+        showLoadingSpinner(false);
     }
 });
 </script>
+{% endblock %}

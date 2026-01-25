@@ -44,6 +44,7 @@ class AnalyticsEngine:
         usage = {zone.zone_id: 0 for zone in self._zones.values()}
         for r in self._history:
             if r.state in {ParkingRequestState.ALLOCATED, ParkingRequestState.ACTIVE, ParkingRequestState.COMPLETED}:
-                usage[r.allocated_zone_id] = usage.get(r.allocated_zone_id, 0) + 1
+                if r.allocated_zone_id:  # check if zone_id is not None
+                    usage[r.allocated_zone_id] = usage.get(r.allocated_zone_id, 0) + 1
         max_usage = max(usage.values(), default=0)
         return [zone_id for zone_id, u in usage.items() if u == max_usage]

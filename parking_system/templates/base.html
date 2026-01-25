@@ -2,25 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Smart Parking System{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartPark - Intelligent Parking Allocation{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header>
-        <h1>🚗 Smart Parking System</h1>
-        <nav>
-            <a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-            <a href="{{ url_for('user.submit_request_page') }}">User Portal</a>
+    <!-- Navigation Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-parking"></i>
+                <span>SmartPark</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('index') }}" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('user.submit_request_page') }}" class="nav-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>New Request</span>
+            </a>
+            <a href="{{ url_for('user.status_page') }}" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Check Status</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-item">
+                <i class="fas fa-th-large"></i>
+                <span>Zone Map</span>
+            </a>
+            <a href="{{ url_for('admin.analytics') }}" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="{{ url_for('admin.system') }}" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                <span>System</span>
+            </a>
         </nav>
-    </header>
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <span class="status-indicator active"></span>
+                <span class="status-text">System Online</span>
+            </div>
+        </div>
+    </aside>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <h1 class="page-title">{% block page_title %}Smart Parking System{% endblock %}</h1>
+            </div>
+            <div class="header-right">
+                <button class="header-icon-btn" id="notif-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=User&background=4f46e5&color=fff" alt="User" class="avatar">
+                    <span class="user-name">Admin</span>
+                </div>
+            </div>
+        </header>
 
-    <footer>
-        <p>&copy; 2026 Smart Parking Allocation</p>
-    </footer>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <p>&copy; 2026 SmartPark - Intelligent Parking Allocation System. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Documentation</a>
+                <a href="#">Support</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification-toast" class="notification-toast"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
