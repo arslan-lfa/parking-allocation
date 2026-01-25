@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Rollback Operations{% endblock %}
+
+{% block content %}
+<h2>Rollback Last K Operations</h2>
+<form id="rollback-form">
+    <input type="number" name="k" min="1" placeholder="Number of operations" required>
+    <button type="submit">Rollback</button>
+</form>
+<div id="rollback-msg"></div>
+
+<script>
+document.getElementById("rollback-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const k = e.target.k.value;
+    const resp = await fetch("/api/admin/rollback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ k })
+    });
+    const data = await resp.json();
+    document.getElementById("rollback-msg").innerText = data.message;
+});
+</script>
+{% endblock %}

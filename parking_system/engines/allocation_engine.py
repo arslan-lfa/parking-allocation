@@ -2,9 +2,9 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import uuid
 
-from domain.zone import Zone
-from domain.parking_request import ParkingRequest, ParkingRequestState, ParkingRequestError
-from domain.parking_slot import ParkingSlot, ParkingSlotError
+from ..domain.zone import Zone
+from ..domain.parking_request import ParkingRequest, ParkingRequestState, ParkingRequestError
+from ..domain.parking_slot import ParkingSlot, ParkingSlotError
 
 
 class AllocationError(Exception):
@@ -103,3 +103,42 @@ class AllocationEngine:
         # perform release
         slot.release()
         request.transition_to(ParkingRequestState.COMPLETED)
+    def allocate(self, request: ParkingRequest) -> None:
+            if request.state != ParkingRequestState.VALIDATED:
+                raise AllocationError("Request must be VALIDATED to allocate")
+
+            # Step 1: preferred zone first
+            preferred_zone = self._zones.get(request.preferred_zone_id)
+            slot = self._find_available_slot(preferred_zone) if preferred_zone else None
+
+            # Step 2: cross-zone fallback with penalty scoring
+            if not slot:
+                sorted_zones = sorted(
+                    (z for z in self._zones.values() if z.zone_id != request.preferred_zone_id),
+                    key=lambda z: getattr(z, "penalty", 1),  # default penalty=1
+                )
+                for z in sorted_zones:
+                    slot = self._find_available_slot(z)
+                    if slot:
+                        break
+
+            # Step 3: no slots anywhere → FAILED
+            if not slot:
+                request.transition_to(ParkingRequestState.FAILED)
+                raise AllocationError("No slots available in any zone")
+
+            # Step 4: record operation
+            op = OperationRecord(
+                operation_type="ALLOCATE",
+                request_id=request.request_id,
+                slot_id=slot.slot_id,
+                prev_slot_state=slot.is_available,
+                prev_request_state=request.state,
+            )
+            self._operations.append(op)
+
+            # Step 5: perform allocation
+            slot.allocate(request.vehicle_id)
+            request.transition_to(ParkingRequestState.ALLOCATED)
+            request._allocated_zone_id = slot.area_id
+            request._allocated_slot_id = slot.slot_id

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Check Parking Status{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Check Parking Status</h2>
+    <form id="status-form">
+        <label for="request_id">Request ID:</label><br>
+        <input type="text" id="request_id" name="request_id" required><br><br>
+        <button type="submit">Check Status</button>
+    </form>
+    <div id="status-msg" style="margin-top:1rem;"></div>
+</div>
+
+<script>
+document.getElementById("status-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const request_id = document.getElementById("request_id").value;
+
+    try {
+        const resp = await fetch(`/api/user/status/${request_id}`);
+        const data = await resp.json();
+        if (data.status === "success") {
+            document.getElementById("status-msg").innerText = 
+                `Request State: ${data.data.state}, Allocated Slot: ${data.data.allocated_slot_id || "-"}, Zone: ${data.data.allocated_zone_id || "-"}`;
+        } else {
+            document.getElementById("status-msg").innerText = data.message;
+        }
+    } catch (err) {
+        document.getElementById("status-msg").innerText = "Error fetching status";
+    }
+});
+</script>

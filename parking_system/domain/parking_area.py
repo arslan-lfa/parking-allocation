@@ -1,5 +1,6 @@
 from typing import Dict, List
-from domain.parking_slot import ParkingSlot, ParkingSlotError
+from .parking_slot import ParkingSlot, ParkingSlotError
+
 
 
 class ParkingAreaError(Exception):

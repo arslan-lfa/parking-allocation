@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Submit Parking Request{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Submit Parking Request</h2>
+    <form id="submit-form">
+        <label for="vehicle_id">Vehicle ID:</label><br>
+        <input type="text" id="vehicle_id" name="vehicle_id" required><br><br>
+
+        <label for="preferred_zone_id">Preferred Zone:</label><br>
+        <input type="text" id="preferred_zone_id" name="preferred_zone_id" required><br><br>
+
+        <button type="submit">Submit Request</button>
+    </form>
+    <div id="submit-msg" style="margin-top:1rem;"></div>
+</div>
+
+<script>
+document.getElementById("submit-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const vehicle_id = document.getElementById("vehicle_id").value;
+    const preferred_zone_id = document.getElementById("preferred_zone_id").value;
+
+    try {
+        const resp = await fetch("/api/user/submit_request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vehicle_id, preferred_zone_id })
+        });
+        const data = await resp.json();
+        document.getElementById("submit-msg").innerText = data.message + (data.data?.request_id ? " | Request ID: " + data.data.request_id : "");
+    } catch (err) {
+        document.getElementById("submit-msg").innerText = "Error submitting request";
+    }
+});
+</script>

@@ -1,5 +1,6 @@
 from typing import Dict, List
-from domain.parking_area import ParkingArea, ParkingAreaError
+from .parking_area import ParkingArea, ParkingAreaError
+
 
 
 class ZoneError(Exception):

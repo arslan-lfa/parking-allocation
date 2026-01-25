@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+<h2>Analytics & Metrics</h2>
+
+<div class="grid">
+    <div class="card">
+        <h3>Average Parking Duration</h3>
+        <p>{{ metrics.average_parking_duration }} seconds</p>
+    </div>
+
+    <div class="card">
+        <h3>Zone Utilization</h3>
+        <ul>
+            {% for zone_id, util in metrics.zone_utilization.items() %}
+            <li>{{ zone_id }}: {{ "%.1f"|format(util*100) }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>Completed vs Cancelled</h3>
+        <p>Completed: {{ metrics.completed_vs_cancelled.completed }}</p>
+        <p>Cancelled: {{ metrics.completed_vs_cancelled.cancelled }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Peak Zones</h3>
+        <ul>
+            {% for z in metrics.peak_zones %}
+            <li>{{ z }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

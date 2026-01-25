@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Zones & Parking Slots</h2>
+
+<div class="grid">
+    {% for zone in zones %}
+    <div class="card">
+        <h3>{{ zone.name }} ({{ zone.zone_id }})</h3>
+        <p>Total Slots: {{ zone.total_capacity() }}</p>
+        <p>Available Slots: {{ zone.total_available() }}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Slot ID</th>
+                    <th>Status</th>
+                    <th>Vehicle</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for area in zone.areas %}
+                    {% for slot in area.slots %}
+                        <tr>
+                            <td>{{ area.name }}</td>
+                            <td>{{ slot.slot_id }}</td>
+                            <td>{{ "Available" if slot.is_available else "Occupied" }}</td>
+                            <td>{{ slot.current_vehicle_id or "-" }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Welcome | Smart Parking{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to Smart Parking Allocation System</h2>
+    <p>Submit a parking request, check your allocation status, or explore admin analytics.</p>
+    <div style="margin-top:1rem;">
+        <a href="{{ url_for('user.submit_request_page') }}"><button>Submit Parking Request</button></a>
+        <a href="{{ url_for('user.status_page') }}"><button>Check Status</button></a>
+        <a href="{{ url_for('admin.dashboard') }}"><button>Admin Dashboard</button></a>
+    </div>
+</div>
+{% endblock %}
