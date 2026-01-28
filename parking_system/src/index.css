@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smart Parking System Design System
+   Theme: Purple Neumorphism with Light Base
+   All colors in HSL format */
+
+@layer base {
+  :root {
+    /* Base colors - Light cream/gray background for neumorphism */
+    --background: 250 20% 95%;
+    --foreground: 260 30% 15%;
+
+    /* Card surfaces with subtle purple tint */
+    --card: 250 25% 97%;
+    --card-foreground: 260 30% 15%;
+
+    /* Popover - elevated surfaces */
+    --popover: 250 25% 98%;
+    --popover-foreground: 260 30% 15%;
+
+    /* Primary - Rich Purple */
+    --primary: 270 60% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Soft lavender */
+    --secondary: 270 30% 90%;
+    --secondary-foreground: 270 40% 25%;
+
+    /* Muted - Subtle purple gray */
+    --muted: 260 15% 90%;
+    --muted-foreground: 260 10% 45%;
+
+    /* Accent - Vibrant purple */
+    --accent: 280 70% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Warm red */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input */
+    --border: 260 20% 88%;
+    --input: 260 20% 88%;
+    --ring: 270 60% 50%;
+
+    --radius: 1rem;
+
+    /* Sidebar */
+    --sidebar-background: 260 25% 93%;
+    --sidebar-foreground: 260 30% 20%;
+    --sidebar-primary: 270 60% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 40% 88%;
+    --sidebar-accent-foreground: 270 40% 20%;
+    --sidebar-border: 260 20% 85%;
+    --sidebar-ring: 270 60% 50%;
+
+    /* Parking Slot Status Colors */
+    --slot-available: 142 70% 45%;
+    --slot-allocated: 45 90% 50%;
+    --slot-occupied: 0 75% 55%;
+    --slot-released: 250 10% 65%;
+
+    /* Neumorphism shadows */
+    --neu-shadow-light: 250 30% 100%;
+    --neu-shadow-dark: 250 25% 82%;
+
+    /* Charts and visualizations */
+    --chart-1: 270 60% 50%;
+    --chart-2: 280 70% 60%;
+    --chart-3: 142 70% 45%;
+    --chart-4: 45 90% 50%;
+    --chart-5: 0 75% 55%;
+
+    /* Gradient stops */
+    --gradient-start: 270 60% 50%;
+    --gradient-end: 280 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer components {
+  /* Neumorphism base styles */
+  .neu-flat {
+    background: hsl(var(--card));
+    box-shadow: 
+      8px 8px 16px hsl(var(--neu-shadow-dark)),
+      -8px -8px 16px hsl(var(--neu-shadow-light));
+  }
+
+  .neu-pressed {
+    background: hsl(var(--card));
+    box-shadow: 
+      inset 4px 4px 8px hsl(var(--neu-shadow-dark)),
+      inset -4px -4px 8px hsl(var(--neu-shadow-light));
+  }
+
+  .neu-convex {
+    background: linear-gradient(145deg, 
+      hsl(var(--neu-shadow-light)), 
+      hsl(var(--card)));
+    box-shadow: 
+      6px 6px 12px hsl(var(--neu-shadow-dark)),
+      -6px -6px 12px hsl(var(--neu-shadow-light));
+  }
+
+  .neu-button {
+    background: linear-gradient(145deg, 
+      hsl(var(--neu-shadow-light)), 
+      hsl(var(--card)));
+    box-shadow: 
+      4px 4px 8px hsl(var(--neu-shadow-dark)),
+      -4px -4px 8px hsl(var(--neu-shadow-light));
+    transition: all 0.2s ease;
+  }
+
+  .neu-button:hover {
+    box-shadow: 
+      6px 6px 12px hsl(var(--neu-shadow-dark)),
+      -6px -6px 12px hsl(var(--neu-shadow-light));
+  }
+
+  .neu-button:active {
+    box-shadow: 
+      inset 2px 2px 4px hsl(var(--neu-shadow-dark)),
+      inset -2px -2px 4px hsl(var(--neu-shadow-light));
+  }
+
+  /* Slot status styles */
+  .slot-available {
+    background: hsl(var(--slot-available));
+    box-shadow: 
+      0 0 10px hsl(var(--slot-available) / 0.4),
+      inset 0 1px 0 hsl(var(--slot-available) / 0.2);
+  }
+
+  .slot-allocated {
+    background: hsl(var(--slot-allocated));
+    box-shadow: 
+      0 0 10px hsl(var(--slot-allocated) / 0.4),
+      inset 0 1px 0 hsl(var(--slot-allocated) / 0.2);
+  }
+
+  .slot-occupied {
+    background: hsl(var(--slot-occupied));
+    box-shadow: 
+      0 0 10px hsl(var(--slot-occupied) / 0.4),
+      inset 0 1px 0 hsl(var(--slot-occupied) / 0.2);
+  }
+
+  .slot-released {
+    background: hsl(var(--slot-released));
+    box-shadow: 
+      0 0 10px hsl(var(--slot-released) / 0.4),
+      inset 0 1px 0 hsl(var(--slot-released) / 0.2);
+  }
+
+  /* Purple gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, 
+      hsl(var(--gradient-start)), 
+      hsl(var(--gradient-end)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Card hover effects */
+  .neu-card-hover {
+    transition: all 0.3s ease;
+  }
+
+  .neu-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      10px 10px 20px hsl(var(--neu-shadow-dark)),
+      -10px -10px 20px hsl(var(--neu-shadow-light));
+  }
+
+  /* Pulse animation for active slots */
+  @keyframes slot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .slot-pulse {
+    animation: slot-pulse 2s ease-in-out infinite;
+  }
+
+  /* Fade in animation */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out forwards;
+  }
+
+  /* Stagger children animation */
+  .stagger-children > * {
+    opacity: 0;
+    animation: fade-in-up 0.4s ease-out forwards;
+  }
+
+  .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+  .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+}

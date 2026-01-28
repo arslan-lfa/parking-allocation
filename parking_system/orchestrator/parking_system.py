@@ -1,11 +1,11 @@
 import uuid
 import hashlib
 from typing import Dict, Any
-from ..engines.allocation_engine import AllocationEngine, AllocationError
-from ..engines.rollback_manager import RollbackManager
-from ..engines.analytics_engine import AnalyticsEngine
-from ..domain.zone import Zone
-from ..domain.parking_request import ParkingRequest, ParkingRequestState
+from engines.allocation_engine import AllocationEngine, AllocationError
+from engines.rollback_manager import RollbackManager
+from engines.analytics_engine import AnalyticsEngine
+from domain.zone import Zone
+from domain.parking_request import ParkingRequest, ParkingRequestState
 
 
 class ParkingSystemError(Exception):

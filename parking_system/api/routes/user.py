@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, render_template
 from pydantic import ValidationError
 from ..schemas.request import SubmitRequestSchema, ReleaseRequestSchema
 from ..schemas.response import GenericResponse
-from parking_system.orchestrator.parking_system import ParkingSystem, ParkingSystemError
+from orchestrator.parking_system import ParkingSystem, ParkingSystemError
 
 # Will be injected by app.py
 parking_system_instance = None

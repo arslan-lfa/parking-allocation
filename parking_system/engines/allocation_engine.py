@@ -2,9 +2,9 @@ from typing import Dict, List, Optional
 from datetime import datetime, timezone
 import uuid
 
-from ..domain.zone import Zone
-from ..domain.parking_request import ParkingRequest, ParkingRequestState, ParkingRequestError
-from ..domain.parking_slot import ParkingSlot, ParkingSlotError
+from domain.zone import Zone
+from domain.parking_request import ParkingRequest, ParkingRequestState, ParkingRequestError
+from domain.parking_slot import ParkingSlot, ParkingSlotError
 
 
 class AllocationError(Exception):

@@ -1,8 +1,8 @@
 from typing import List, Dict
 from datetime import datetime
 
-from ..domain.parking_request import ParkingRequest, ParkingRequestState
-from ..domain.zone import Zone
+from domain.parking_request import ParkingRequest, ParkingRequestState
+from domain.zone import Zone
 
 
 class AnalyticsEngine:

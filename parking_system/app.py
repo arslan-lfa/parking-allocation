@@ -4,12 +4,12 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from parking_system.orchestrator.parking_system import ParkingSystem
-from parking_system.domain.zone import Zone
-from parking_system.domain.parking_area import ParkingArea
-from parking_system.domain.parking_slot import ParkingSlot
-from parking_system.api.routes.user import user_bp
-from parking_system.api.routes.admin import admin_bp, admin_api_bp
+from orchestrator.parking_system import ParkingSystem
+from domain.zone import Zone
+from domain.parking_area import ParkingArea
+from domain.parking_slot import ParkingSlot
+from api.routes.user import user_bp
+from api.routes.admin import admin_bp, admin_api_bp
 
 # ----- Sample Zones Setup -----
 # Zone Z1 with 2 areas, each with 3 slots
@@ -38,8 +38,8 @@ app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'sta
 parking_system_instance = ParkingSystem(zones)
 
 # Inject parking_system_instance into route modules
-import parking_system.api.routes.user as user_module
-import parking_system.api.routes.admin as admin_module
+import api.routes.user as user_module
+import api.routes.admin as admin_module
 user_module.parking_system_instance = parking_system_instance
 admin_module.parking_system_instance = parking_system_instance
 

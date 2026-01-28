@@ -1,6 +1,6 @@
 from typing import List, Dict
-from ..domain.parking_request import ParkingRequest, ParkingRequestState
-from ..domain.parking_slot import ParkingSlot, ParkingSlotError
+from domain.parking_request import ParkingRequest, ParkingRequestState
+from domain.parking_slot import ParkingSlot, ParkingSlotError
 from .allocation_engine import AllocationEngine, OperationRecord
 
 
